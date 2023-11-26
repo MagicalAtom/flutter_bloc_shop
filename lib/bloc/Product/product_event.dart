@@ -8,10 +8,12 @@ abstract class ProductEvent {}
 
 class ProductDetailRequestEvent extends ProductEvent {
   String product_id;
+  String category_id;
 
   
   ProductDetailRequestEvent({
     required this.product_id,
+    required this.category_id,
   });
 
 

@@ -24,7 +24,8 @@ final class ProductRequestResponseState extends ProductState {
   */
 Either<String,List<ProductGallery>> productGallery;
 Either<String,List<productVariant>> productVariantList;
-ProductRequestResponseState({required this.productGallery,required this.productVariantList});
+Either<String,CategoryModel> productCategory;
+ProductRequestResponseState({required this.productGallery,required this.productVariantList,required this.productCategory});
 
 
 

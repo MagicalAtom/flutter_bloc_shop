@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/src/foundation/annotations.dart';
 import 'package:online_shop/config/data.dart';
 import 'package:online_shop/data/datasources/productPageDetail/product_detail_data_source_impl.dart';
+import 'package:online_shop/data/models/Category.dart';
 import 'package:online_shop/data/models/ProductGallery.dart';
 import 'package:online_shop/data/models/ProductVariant.dart';
 import 'package:online_shop/data/models/Variant.dart';
@@ -43,9 +45,11 @@ class ProductDetail extends ProductDetailInterFace {
   }
 
   @override
-  Future<List<Varaint>> getVariants() async {
-    Response response = await httpRequest.get(Data.VariantPath, httpRequest.setqueryParameters(
-            filtername: 'product_id', filterValue: "0tc0e5ju89x5ogj"));
+  Future<List<Varaint>> getVariants(String product_id) async {
+    Response response = await httpRequest.get(
+        Data.VariantPath,
+        httpRequest.setqueryParameters(
+            filtername: 'product_id', filterValue: "$product_id"));
 
     List<Varaint> variantsList = [];
 
@@ -58,9 +62,9 @@ class ProductDetail extends ProductDetailInterFace {
   }
 
   @override
-  Future<List<productVariant>> getPrductVariants() async {
+  Future<List<productVariant>> getPrductVariants(String product_id) async {
     var VariantType = await getVariantType();
-    var VariantsListType = await getVariants();
+    var VariantsListType = await getVariants(product_id);
 
     List<productVariant> ProductVariant = [];
 
@@ -77,5 +81,16 @@ class ProductDetail extends ProductDetailInterFace {
     }
 
     return ProductVariant;
+  }
+
+  @override
+  // return a 1 category
+  Future<CategoryModel> getProductCategory(String category_id) async {
+    Response response = await httpRequest.get(
+        Data.CategoryPath,
+        httpRequest.setqueryParameters(
+            filtername: 'id', filterValue: category_id));
+
+      return CategoryModel.fromMapJson(response.data['items'][0]);
   }
 }

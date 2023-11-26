@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:online_shop/data/datasources/productPageDetail/product_detail_data_source_impl.dart';
+import 'package:online_shop/data/models/Category.dart';
 import 'package:online_shop/data/models/ProductGallery.dart';
 import 'package:online_shop/data/models/ProductVariant.dart';
 import 'package:online_shop/data/models/VariantType.dart';
@@ -31,13 +32,27 @@ class ProductDetailPageRepository implements ProductDetailPageRepositoryInterFac
   }
 
   @override
-  Future<Either<String, List<productVariant>>> getProductVariant() async {
+  Future<Either<String, List<productVariant>>> getProductVariant(String product_id) async {
     try {
-      final ProductVariant =  await productDetail.getPrductVariants();
+      final ProductVariant =  await productDetail.getPrductVariants(product_id);
       return right(ProductVariant);
     }on HttpExceptionHandle catch(e){
       return left(e.message ?? 'خطا داده های برنامه در دسترس نیست');
     }
+
+
+
+  }
+
+  @override
+  Future<Either<String, CategoryModel>> getProductCategory(String category_id) async {
+    try{
+      final productCategory = await productDetail.getProductCategory(category_id);
+      return right(productCategory);
+    }on HttpExceptionHandle catch(e){
+      return left(e.message ?? 'خطا داده های برنامه در دسترس نیست');
+    }
+
 
 
 

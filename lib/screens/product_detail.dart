@@ -13,6 +13,7 @@ import 'package:online_shop/widgets/appbar_widget.dart';
 import 'package:online_shop/widgets/cache_image.dart';
 import 'package:online_shop/widgets/custom_text_widget.dart';
 import 'package:online_shop/widgets/product_detail_screen/product_colors_variant.dart';
+import 'package:online_shop/widgets/product_detail_screen/product_storage_variant.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   ProductDetailScreen({super.key, required this.productId});
@@ -29,7 +30,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     context
         .read<ProductBloc>()
         // اینجا آیدی محصول رو که از ویجت جنریت محبوب ترین محصولات میاد رو میدیم به بلاک تا بلاک با استفاده از ریپازیتوری و ریپازیتوری با استفاده از دیتاسورس موارد مورد نیاز ما رو بگیره .
-        .add(ProductDetailRequestEvent(product_id: widget.productId.id));
+        .add(ProductDetailRequestEvent(
+            product_id: widget.productId.id,
+            category_id: widget.productId.category));
   }
 
   int _selectedImageGalleryIndex = 0;
@@ -46,46 +49,56 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               child: CustomScrollView(
                 slivers: [
                   // ********************************** AppBar Widget *********************************** //
-                  SliverToBoxAdapter(
-                    child: AppBarWidget(
-                      child: Expanded(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Expanded(
-                              child: Row(
-                                mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    'آیفون',
-                                    style: TextStyle(
-                                        color: ColorConfig.main,
-                                        fontFamily: 'SM',
-                                        fontSize: 19,
-                                        fontWeight: FontWeight.w600),
-                                  ),
-                                ],
+                  state.productCategory.fold((faild) {
+                    return const SliverToBoxAdapter(
+                      child: Text('خطا ! داده های برنامه در دسترس نیست'),
+                    );
+                  }, (success) {
+                    return SliverToBoxAdapter(
+                      child: AppBarWidget(
+                        child: Expanded(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                               Expanded(
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.max,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      success.title,
+                                      style: const TextStyle(
+                                          color: ColorConfig.main,
+                                          fontFamily: 'SM',
+                                          fontSize: 19,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                            GestureDetector(
-                                onTap: () {
-                                  Navigator.pop(context);
-                                },
-                                child: Image.asset('assets/images/back.png'))
-                          ],
+                              GestureDetector(
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Image.asset('assets/images/back.png'))
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                  // ********************************** Product Gallery Widget *********************************** //
+                    );
+                  }),
+
+                  // ********************************** Product Box Widget *********************************** //
                   const SliverToBoxAdapter(
                     child: SizedBox(
                       height: 12,
                     ),
                   ),
 
-                  const _ProductTitle(), // ProductTitle
+
+
+                  _ProductTitle(productTitle: widget.productId.name),
+
 
                   const SliverToBoxAdapter(
                     child: SizedBox(
@@ -190,19 +203,38 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     },
                     (success) {
                       for (var product in success) {
+                        /*
+                        گفتیم اگه تایپش برابر با کالر هست بیا کالر ورینت هاش رو بفرست سمت این ویجت تا اونور نشونش بدیم
+                        */
                         if (product.variantType.type == VariantTypeEnum.Color) {
                           return ColorsVariant(
                             variant: product.varaint,
                           );
                         }
                       }
-                      return SliverToBoxAdapter(
-                        child: Text('adiajsdoi'),
+                      return const SliverToBoxAdapter(
+                        child: Text('Error'),
                       );
                     },
                   ),
 
                   // ************** Choose a Storage Size   ************* //
+
+                  state.productVariantList.fold((faild) {
+                    return const SliverToBoxAdapter(
+                      child: Text('داده های برنامه در دسترس نیست'),
+                    );
+                  }, (success) {
+                    for (var product in success) {
+                      if (product.variantType.type == VariantTypeEnum.Storage) {
+                        // در اصل میگه اونایی که تایپشون اینه رو برگردون
+                        return LocalStorage(variantType: product.varaint);
+                      }
+                    }
+                    return const SliverToBoxAdapter(
+                      child: Text('داده های برنامه در دسترس نیست'),
+                    );
+                  }),
 
                   // ******************************* End Select Local Storage ****************************************** //
                   SliverToBoxAdapter(
@@ -614,9 +646,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 }
 
 class _ProductTitle extends StatelessWidget {
-  const _ProductTitle({
+  _ProductTitle({
     super.key,
+    required this.productTitle,
   });
+  String productTitle;
 
   @override
   Widget build(BuildContext context) {
@@ -625,7 +659,7 @@ class _ProductTitle extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           CustomText(
-            text: ' SE 2022 آیفون ',
+            text: productTitle,
             fontFamily: 'SM',
             fontSize: 16,
             fontWeight: FontWeight.w700,

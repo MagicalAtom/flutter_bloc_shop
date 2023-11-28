@@ -19,9 +19,6 @@ class _ColorsVariantState extends State<ColorsVariant> {
   var clickItem;
   @override
   void initState() {
-    setState(() {
-    clickItem = widget.variant.first;
-    });
     super.initState();
   }
 

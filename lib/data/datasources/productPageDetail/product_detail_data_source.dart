@@ -70,7 +70,7 @@ class ProductDetail extends ProductDetailInterFace {
 
     for (var variantType in VariantType) {
       // اینجا برای پیاده سازی و مرتبط کردن ورینت ها با تایپ ورینت هاست
-      var VariantList = VariantsListType.where((element) =>
+      var VariantList = await VariantsListType.where((element) =>
               element.typeId ==
               variantType
                   .id) // اینجا میگه هر وقت این دو تا با هم آیدی هاشون برابر بود . برای صحت سنجی ریلیشن هست ریخته بشه داخل متغیر

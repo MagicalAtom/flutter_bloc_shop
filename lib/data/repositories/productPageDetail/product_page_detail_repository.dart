@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:online_shop/data/datasources/productPageDetail/product_detail_data_source_impl.dart';
 import 'package:online_shop/data/models/Category.dart';
 import 'package:online_shop/data/models/ProductGallery.dart';
+import 'package:online_shop/data/models/ProductProperty.dart';
 import 'package:online_shop/data/models/ProductVariant.dart';
 import 'package:online_shop/data/models/VariantType.dart';
 import 'package:online_shop/data/repositories/productPageDetail/product_page_detail_repository_impl.dart';
@@ -54,6 +55,19 @@ class ProductDetailPageRepository implements ProductDetailPageRepositoryInterFac
     }
 
 
+
+
+  }
+
+  @override
+  Future<Either<String, List<ProductProprty>>> getProductProperty(String product_id) async {
+  try {
+    final property = await productDetail.getProductProperty(product_id);
+    return right(property);
+  }on HttpExceptionHandle catch (e) {
+    return left(e.message ?? 'خطا داده های برنامه در دسترس نیست');
+    
+  }    
 
 
   }

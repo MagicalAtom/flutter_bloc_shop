@@ -1,6 +1,6 @@
-import 'package:flutter/foundation.dart';
 import 'package:online_shop/data/models/Category.dart';
 import 'package:online_shop/data/models/ProductGallery.dart';
+import 'package:online_shop/data/models/ProductProperty.dart';
 import 'package:online_shop/data/models/ProductVariant.dart';
 import 'package:online_shop/data/models/Variant.dart';
 import 'package:online_shop/data/models/VariantType.dart';
@@ -16,7 +16,7 @@ Future<List<VariantType>> getVariantType();
 Future<List<Varaint>> getVariants(String product_id);
 Future<List<productVariant>> getPrductVariants(String product_id);
 Future<CategoryModel> getProductCategory(String category_id);
-
+Future<List<ProductProprty>> getProductProperty(String product_id);
 
 
 }

@@ -7,6 +7,8 @@ import 'package:online_shop/data/datasources/banner/banner_data_source.dart';
 import 'package:online_shop/data/datasources/banner/banner_data_source_impl.dart';
 import 'package:online_shop/data/datasources/category/category_datasource_api.dart';
 import 'package:online_shop/data/datasources/category/category_impl.dart';
+import 'package:online_shop/data/datasources/categoryProduct/category_product_data_source.dart';
+import 'package:online_shop/data/datasources/categoryProduct/category_product_data_source_impl.dart';
 import 'package:online_shop/data/datasources/product/product_data_source.dart';
 import 'package:online_shop/data/datasources/product/product_data_source_impl.dart';
 import 'package:online_shop/data/datasources/productPageDetail/product_detail_data_source.dart';
@@ -18,6 +20,8 @@ import 'package:online_shop/data/repositories/banner/banner_repository.dart';
 import 'package:online_shop/data/repositories/banner/banner_repository_impl.dart';
 import 'package:online_shop/data/repositories/category/category_repository.dart';
 import 'package:online_shop/data/repositories/category/category_repository_impl.dart';
+import 'package:online_shop/data/repositories/categoryProduct/category_product_repository.dart';
+import 'package:online_shop/data/repositories/categoryProduct/category_product_repository_impl.dart';
 import 'package:online_shop/data/repositories/product/product_repository.dart';
 import 'package:online_shop/data/repositories/product/product_repository_impl.dart';
 import 'package:online_shop/data/repositories/productPageDetail/product_page_detail_repository.dart';
@@ -133,7 +137,18 @@ void initProductGalleryRepositoryService(){
   ServiceLocator.registerFactory<ProductDetailPageRepositoryInterFace>(() => ProductDetailPageRepository());
 }
 
+// ===================== Remote Product Gallery DataSource
 
+void initCategoryProductService(){
+  ServiceLocator.registerFactory<CategoryProductInterFace>(() => CategoryProduct());
+}
+
+
+// ===================== Product Gallery Repository
+
+void initCategoryProductRepositoryService(){
+  ServiceLocator.registerFactory<CategoryProductRepositoryInterFace>(() => CategoryProductRepository());
+}
 
 
 
@@ -157,5 +172,7 @@ initProductRepositoryService();
 initProductService();
 initProductGalleryRepositoryService();
 initProductGalleryService();
+initCategoryProductRepositoryService();
+initCategoryProductService();
 }
 

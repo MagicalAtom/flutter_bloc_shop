@@ -7,6 +7,7 @@ import 'package:online_shop/config/color.dart';
 import 'package:online_shop/screens/basket_screen.dart';
 import 'package:online_shop/screens/category_screen.dart';
 import 'package:online_shop/screens/loading_screen.dart';
+import 'package:online_shop/screens/product_list_screen.dart';
 import 'package:online_shop/screens/user_profile_screen.dart';
 import 'package:online_shop/widgets/appbar_widget.dart';
 import 'package:online_shop/widgets/custom_text_widget.dart';

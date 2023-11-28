@@ -13,6 +13,8 @@ import 'package:online_shop/widgets/appbar_widget.dart';
 import 'package:online_shop/widgets/cache_image.dart';
 import 'package:online_shop/widgets/custom_text_widget.dart';
 import 'package:online_shop/widgets/product_detail_screen/product_colors_variant.dart';
+import 'package:online_shop/widgets/product_detail_screen/product_description.dart';
+import 'package:online_shop/widgets/product_detail_screen/product_properties.dart';
 import 'package:online_shop/widgets/product_detail_screen/product_storage_variant.dart';
 
 class ProductDetailScreen extends StatefulWidget {
@@ -237,100 +239,30 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   }),
 
                   // ******************************* End Select Local Storage ****************************************** //
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 18, vertical: 22),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 15),
-                        height: 50,
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(15),
-                            border: Border.all(
-                                width: 1.5,
-                                color: ColorConfig.grey.withOpacity(.7))),
-                        child: Directionality(
-                          textDirection: TextDirection.rtl,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              CustomText(
-                                text: 'مشخصات فنی',
-                                fontFamily: 'SM',
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                              ),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  CustomText(
-                                    text: 'مشاهده',
-                                    fontFamily: 'SM',
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w500,
-                                    color: ColorConfig.main,
-                                  ),
-                                  const SizedBox(
-                                    width: 7,
-                                  ),
-                                  Image.asset('assets/images/open.png'),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
+                
+                state.productProperties.fold(
+                  (faild){
+                  return const SliverToBoxAdapter(child: Text('خطا داده های برنامه در دسترس نیست'),);
+                  },
+                  (success){
+                    return ProductProprtyWidget(description: success);
+                  }
+                ),
 
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 18),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 15),
-                        height: 50,
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(15),
-                            border: Border.all(
-                                width: 1.5,
-                                color: ColorConfig.grey.withOpacity(.7))),
-                        child: Directionality(
-                          textDirection: TextDirection.rtl,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              CustomText(
-                                text: 'توضیحات محصول',
-                                fontFamily: 'SM',
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                              ),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  CustomText(
-                                    text: 'مشاهده',
-                                    fontFamily: 'SM',
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w500,
-                                    color: ColorConfig.main,
-                                  ),
-                                  const SizedBox(
-                                    width: 7,
-                                  ),
-                                  Image.asset('assets/images/open.png'),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
+
+
+
+
+
+
+
+
+
+                  //============================ product Description =========================== //
+
+                   ProductDescription(description: widget.productId.description,),
+
+
                   const SliverToBoxAdapter(
                     child: SizedBox(
                       height: 22,
@@ -644,6 +576,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     );
   }
 }
+
 
 class _ProductTitle extends StatelessWidget {
   _ProductTitle({

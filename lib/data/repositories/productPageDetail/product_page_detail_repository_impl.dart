@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:online_shop/data/models/Category.dart';
 import 'package:online_shop/data/models/ProductGallery.dart';
+import 'package:online_shop/data/models/ProductProperty.dart';
 import 'package:online_shop/data/models/ProductVariant.dart';
 import 'package:online_shop/data/models/VariantType.dart';
 
@@ -13,4 +14,5 @@ abstract class ProductDetailPageRepositoryInterFace {
   Future<Either<String,List<VariantType>>> getVariantType();
   Future<Either<String,List<productVariant>>> getProductVariant(String product_id);
   Future<Either<String,CategoryModel>> getProductCategory(String category_id);
+  Future<Either<String,List<ProductProprty>>> getProductProperty(String product_id);
 }

@@ -10,10 +10,11 @@ class CustomText extends StatelessWidget {
       this.fontWeight = FontWeight.w500,
       this.decoration = TextDecoration.none,
       this.decorationStyle = TextDecorationStyle.solid,
-      this.overflowText = false
+      this.overflowText = false,
+      this.textAlign = TextAlign.right,
       });
 
-  String text;
+  var text;
   Color color;
   double fontSize;
   String fontFamily;
@@ -21,6 +22,7 @@ class CustomText extends StatelessWidget {
   TextDecoration decoration;
   TextDecorationStyle decorationStyle;
   bool overflowText;
+  TextAlign textAlign;
   
 
   @override
@@ -29,6 +31,7 @@ class CustomText extends StatelessWidget {
       width: overflowText ? 150 : null,
       child: Text(
         text,
+        textAlign: textAlign,
         maxLines: overflowText ? 1 : null,
         style: TextStyle(
           color: color,

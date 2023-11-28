@@ -8,6 +8,7 @@ class Data {
   static const ProductGalleryPath = "collections/gallery/records"; 
   static const VariantTypePath = "collections/variants_type/records"; 
   static const VariantPath = "collections/variants/records"; 
+  static const ProductProperties = "collections/properties/records";
   static const LoginTokenName = "token";
 
 

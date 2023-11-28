@@ -4,6 +4,7 @@ import 'package:online_shop/config/data.dart';
 import 'package:online_shop/data/datasources/productPageDetail/product_detail_data_source_impl.dart';
 import 'package:online_shop/data/models/Category.dart';
 import 'package:online_shop/data/models/ProductGallery.dart';
+import 'package:online_shop/data/models/ProductProperty.dart';
 import 'package:online_shop/data/models/ProductVariant.dart';
 import 'package:online_shop/data/models/Variant.dart';
 import 'package:online_shop/data/models/VariantType.dart';
@@ -84,13 +85,31 @@ class ProductDetail extends ProductDetailInterFace {
   }
 
   @override
-  // return a 1 category
+  // return a  category
   Future<CategoryModel> getProductCategory(String category_id) async {
     Response response = await httpRequest.get(
         Data.CategoryPath,
         httpRequest.setqueryParameters(
             filtername: 'id', filterValue: category_id));
 
-      return CategoryModel.fromMapJson(response.data['items'][0]);
+    return CategoryModel.fromMapJson(response.data['items'][0]);
+  }
+
+  @override
+  Future<List<ProductProprty>> getProductProperty(String product_id) async {
+    Response response = await httpRequest.get(
+        Data.ProductProperties,
+        httpRequest.setqueryParameters(
+            filtername: 'product_id', filterValue: "ud5m8v9ijxd81rn"));
+    List<ProductProprty> productProperties = [];
+
+    if (response.statusCode == 200) {
+      // اینجا در این ای پی آی داده ها در آرایه ای به نام آیتمز برگشت داده میشوند
+      productProperties = response.data['items']
+          .map<ProductProprty>(
+              (jsonMapObject) => ProductProprty.fromMap(jsonMapObject))
+          .toList();
+    }
+    return productProperties;
   }
 }

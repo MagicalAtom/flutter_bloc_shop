@@ -1,7 +1,11 @@
 import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/material.dart';
 import 'package:online_shop/config/color.dart';
+import 'package:online_shop/data/models/BasketItem.dart';
+import 'package:online_shop/helper/helper.dart';
+import 'package:online_shop/services/Hive/Hive.dart';
 import 'package:online_shop/widgets/appbar_widget.dart';
+import 'package:online_shop/widgets/cache_image.dart';
 import 'package:online_shop/widgets/custom_text_widget.dart';
 
 class BasketScreen extends StatefulWidget {
@@ -12,31 +16,30 @@ class BasketScreen extends StatefulWidget {
 }
 
 class _BasketScreenState extends State<BasketScreen> {
+  var basketBox = hive.open<BasketItem>('BasketBox');
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: InkWell(
-        onTap: (){
-        },
+        onTap: () {},
         child: Container(
-                        margin: EdgeInsets.symmetric(horizontal: 24),
-                        height: 56,
-                        width: MediaQuery.of(context).size.width,
-                        decoration: BoxDecoration(
-                        color: ColorConfig.green,
-                          borderRadius: BorderRadius.circular(15)
-                        ),
-                        child: Center(
-                          child: CustomText(
-                            text: 'ادامه فرآیند خرید',
-                            color: Colors.white,
-                            fontFamily: 'SM',
-                            fontSize: 17,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
+          margin: const EdgeInsets.symmetric(horizontal: 24),
+          height: 56,
+          width: MediaQuery.of(context).size.width,
+          decoration: BoxDecoration(
+              color: ColorConfig.green,
+              borderRadius: BorderRadius.circular(15)),
+          child: Center(
+            child: CustomText(
+              text: 'ادامه فرآیند خرید',
+              color: Colors.white,
+              fontFamily: 'SM',
+              fontSize: 17,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
       ),
       body: SafeArea(
         child: Stack(
@@ -71,16 +74,29 @@ class _BasketScreenState extends State<BasketScreen> {
                     ),
                   ),
                 ),
-                SliverToBoxAdapter(
+                const SliverToBoxAdapter(
                   child: SizedBox(height: 28),
                 ),
                 SliverPadding(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  sliver: SliverList(
-                    delegate: SliverChildBuilderDelegate((context, index) => BasketBox(),childCount: 2),
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  sliver: ValueListenableBuilder(
+                    valueListenable: basketBox.values,
+                    builder: (context, value, child) {
+                    return SliverList(
+                      // This is not scrolldirection
+                      delegate: SliverChildBuilderDelegate(
+                          (context, index) {
+                            var boxValue = basketBox.values.toList()[index];
+                            return BasketBox(
+                              SingleBasketItem: boxValue,
+                              );
+                          },
+                          childCount: basketBox.values.toList().length),
+                    );  
+                    },
+                     
                   ),
                 ),
-
               ],
             ),
           ],
@@ -91,15 +107,18 @@ class _BasketScreenState extends State<BasketScreen> {
 }
 
 class BasketBox extends StatelessWidget {
-  const BasketBox({
+  BasketBox({
     super.key,
+    required this.SingleBasketItem,
   });
+
+  BasketItem SingleBasketItem;
+
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      shape: ContinuousRectangleBorder(
-          borderRadius: BorderRadius.circular(30)),
+      shape: ContinuousRectangleBorder(borderRadius: BorderRadius.circular(30)),
       child: Container(
         height: 260,
         decoration: BoxDecoration(
@@ -114,15 +133,16 @@ class BasketBox extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding:
-                        const EdgeInsets.only(top: 25, right: 19),
-                    child: Image.asset(
-                      'assets/images/iphone.png',
-                      width: 80,
-                      fit: BoxFit.cover,
-                    ),
+                    padding: const EdgeInsets.only(top: 25, right: 19),
+                    child: SizedBox(
+                      width: 83,
+                      child: CacheImage(imageUrl: Helper.getFilePath(
+                          collectionId: SingleBasketItem.collectionId,
+                          recordId: SingleBasketItem.id,
+                          filename: SingleBasketItem.thumbnail),),
+                    )
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 18,
                   ),
                   Padding(
@@ -131,13 +151,13 @@ class BasketBox extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         CustomText(
-                          text: 'آیفون 13 پرومکس 2 سیمکارت',
+                          text: SingleBasketItem.name,
                           color: Colors.black,
                           fontFamily: 'SM',
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 18,
                         ),
                         CustomText(
@@ -147,31 +167,30 @@ class BasketBox extends StatelessWidget {
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 10,
                         ),
                         Row(
                           children: [
                             CustomText(
-                              text: '46,000,000 تومان',
+                              text: SingleBasketItem.realPrice.toString() +  ' تومان',
                               color: ColorConfig.grey,
                               fontFamily: 'SM',
                               fontSize: 14,
                               fontWeight: FontWeight.w700,
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 5,
                             ),
                             Container(
                               width: 30,
                               height: 20,
                               decoration: BoxDecoration(
-                                  color: Color(0xffd02026),
-                                  borderRadius:
-                                      BorderRadius.circular(40)),
+                                  color: const Color(0xffd02026),
+                                  borderRadius: BorderRadius.circular(40)),
                               child: Center(
                                 child: CustomText(
-                                  text: '5%',
+                                  text: SingleBasketItem.persent!.toStringAsFixed(0) + '%',
                                   color: Colors.white,
                                   fontFamily: 'SM',
                                   fontSize: 15,
@@ -181,7 +200,7 @@ class BasketBox extends StatelessWidget {
                             ),
                           ],
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 10,
                         ),
                         Row(
@@ -189,16 +208,14 @@ class BasketBox extends StatelessWidget {
                             Container(
                               width: 98,
                               height: 34,
-                              padding: EdgeInsets.symmetric(
+                              padding: const EdgeInsets.symmetric(
                                   horizontal: 10, vertical: 2),
                               decoration: BoxDecoration(
                                   border: Border.all(
                                     width: 1,
-                                    color: ColorConfig.grey
-                                        .withOpacity(.7),
+                                    color: ColorConfig.grey.withOpacity(.7),
                                   ),
-                                  borderRadius:
-                                      BorderRadius.circular(13)),
+                                  borderRadius: BorderRadius.circular(13)),
                               child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
@@ -208,7 +225,7 @@ class BasketBox extends StatelessWidget {
                                     fontFamily: 'SM',
                                     fontSize: 11,
                                     fontWeight: FontWeight.w700,
-                                    color: Color(0xff858585),
+                                    color: const Color(0xff858585),
                                   ),
                                   Image.asset(
                                     'assets/images/option.png',
@@ -218,22 +235,19 @@ class BasketBox extends StatelessWidget {
                                 ],
                               ),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 8,
                             ),
                             Container(
                               width: 115,
                               height: 34,
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 8),
+                              padding: const EdgeInsets.symmetric(horizontal: 8),
                               decoration: BoxDecoration(
                                   border: Border.all(
                                     width: 1,
-                                    color: ColorConfig.grey
-                                        .withOpacity(.7),
+                                    color: ColorConfig.grey.withOpacity(.7),
                                   ),
-                                  borderRadius:
-                                      BorderRadius.circular(13)),
+                                  borderRadius: BorderRadius.circular(13)),
                               child: Row(
                                 children: [
                                   Container(
@@ -243,7 +257,7 @@ class BasketBox extends StatelessWidget {
                                         color: Colors.green[900],
                                         shape: BoxShape.circle),
                                   ),
-                                  SizedBox(
+                                 const  SizedBox(
                                     width: 5,
                                   ),
                                   CustomText(
@@ -251,9 +265,9 @@ class BasketBox extends StatelessWidget {
                                     fontFamily: 'SM',
                                     fontSize: 12,
                                     fontWeight: FontWeight.w700,
-                                    color: Color(0xff858585),
+                                    color: const Color(0xff858585),
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     width: 4,
                                   ),
                                   Image.asset(
@@ -266,7 +280,7 @@ class BasketBox extends StatelessWidget {
                             ),
                           ],
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 12,
                         ),
                         Row(
@@ -274,16 +288,14 @@ class BasketBox extends StatelessWidget {
                             Container(
                               width: 50,
                               height: 30,
-                              padding: EdgeInsets.symmetric(
+                              padding: const EdgeInsets.symmetric(
                                   horizontal: 10, vertical: 2),
                               decoration: BoxDecoration(
                                   border: Border.all(
                                     width: 1,
-                                    color: ColorConfig.grey
-                                        .withOpacity(.7),
+                                    color: ColorConfig.grey.withOpacity(.7),
                                   ),
-                                  borderRadius:
-                                      BorderRadius.circular(13)),
+                                  borderRadius: BorderRadius.circular(13)),
                               child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
@@ -293,7 +305,7 @@ class BasketBox extends StatelessWidget {
                                     fontFamily: 'SM',
                                     fontSize: 12,
                                     fontWeight: FontWeight.w700,
-                                    color: Color(0xff858585),
+                                    color: const Color(0xff858585),
                                   ),
                                   Image.asset(
                                     'assets/images/option.png',
@@ -303,22 +315,19 @@ class BasketBox extends StatelessWidget {
                                 ],
                               ),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 10,
                             ),
                             Container(
                               width: 70,
                               height: 30,
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 7),
+                              padding: const  EdgeInsets.symmetric(horizontal: 7),
                               decoration: BoxDecoration(
                                   border: Border.all(
                                     width: 1,
-                                    color: ColorConfig.grey
-                                        .withOpacity(.7),
+                                    color: ColorConfig.grey.withOpacity(.7),
                                   ),
-                                  borderRadius:
-                                      BorderRadius.circular(13)),
+                                  borderRadius: BorderRadius.circular(13)),
                               child: Row(
                                 children: [
                                   Image.asset(
@@ -326,7 +335,7 @@ class BasketBox extends StatelessWidget {
                                     width: 16,
                                     fit: BoxFit.cover,
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     width: 6,
                                   ),
                                   CustomText(
@@ -334,27 +343,24 @@ class BasketBox extends StatelessWidget {
                                     fontFamily: 'SM',
                                     fontSize: 12,
                                     fontWeight: FontWeight.w700,
-                                    color: Color(0xff858585),
+                                    color: const Color(0xff858585),
                                   ),
                                 ],
                               ),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 10,
                             ),
                             Container(
                               width: 70,
                               height: 30,
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 7),
+                              padding: const EdgeInsets.symmetric(horizontal: 7),
                               decoration: BoxDecoration(
                                   border: Border.all(
                                     width: 1,
-                                    color: ColorConfig.grey
-                                        .withOpacity(.7),
+                                    color: ColorConfig.grey.withOpacity(.7),
                                   ),
-                                  borderRadius:
-                                      BorderRadius.circular(13)),
+                                  borderRadius: BorderRadius.circular(13)),
                               child: Row(
                                 children: [
                                   Image.asset(
@@ -362,7 +368,7 @@ class BasketBox extends StatelessWidget {
                                     width: 16,
                                     fit: BoxFit.cover,
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     width: 6,
                                   ),
                                   CustomText(
@@ -370,7 +376,7 @@ class BasketBox extends StatelessWidget {
                                     fontFamily: 'SM',
                                     fontSize: 12,
                                     fontWeight: FontWeight.w700,
-                                    color: Color(0xff858585),
+                                    color: const Color(0xff858585),
                                   ),
                                 ],
                               ),
@@ -382,7 +388,7 @@ class BasketBox extends StatelessWidget {
                   )
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               Padding(
@@ -393,20 +399,20 @@ class BasketBox extends StatelessWidget {
                   dashLength: 7,
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 12,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   CustomText(
-                    text: '14,350,000',
+                    text: SingleBasketItem.price.toString(),
                     color: Colors.black,
                     fontFamily: 'SM',
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 11,
                   ),
                   CustomText(

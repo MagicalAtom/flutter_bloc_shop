@@ -10,9 +10,9 @@ part 'category_product_state.dart';
 
 class CategoryProductBloc
     extends Bloc<CategoryProductEvent, CategoryProductState> {
-  CategoryProductBloc() : super(CategoryProductInitial()) {
-    final CategoryProductRepositoryInterFace categoryProduct =
+          final CategoryProductRepositoryInterFace categoryProduct =
         ServiceLocator.get();
+  CategoryProductBloc() : super(CategoryProductInitial()) {
     on<CategoryProductRequestEvent>((event, emit) async {
       emit(CategoryProductLoadingState());
       final getProduct =

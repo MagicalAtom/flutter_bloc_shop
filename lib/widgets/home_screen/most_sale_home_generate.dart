@@ -27,7 +27,7 @@ class mostSaleProducts extends StatelessWidget {
                 onTap: () {
                   Navigator.push(context, MaterialPageRoute(
                     builder: (context) {
-                      return ProductDetailScreen(productId: BestSellerProduct[index],);
+                      return ProductDetailScreen(product: BestSellerProduct[index],);
                     },
                   ));
                 },

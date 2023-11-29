@@ -11,10 +11,16 @@ class CategoryProduct implements CategoryProductInterFace {
 
   @override
   Future<List<Product>> getCategoryProduct(String category_id) async {
-    Response response = await httpRequest.get(
-        Data.ProductPath,
-        httpRequest.setqueryParameters(
-            filtername: 'category', filterValue: "$category_id"));
+    Response response;
+
+    if (category_id == '78q8w901e6iipuk') {
+      response = await httpRequest.get(Data.ProductPath); // اگه کتگوری آیدی که میفرستن سمت سرور برای کتگوری همه باشه بیاد کل محصولات رو بگیره 
+    } else {
+      response = await httpRequest.get( // اگه چیزی غیر از همه بود بیاد کتگوری آیدی رو بفرسته تا محصولاتی که فقط کتگوری آیدی رو دارن برگشت داده بشن
+          Data.ProductPath,
+          httpRequest.setqueryParameters(
+              filtername: 'category', filterValue: "$category_id"));
+    }
 
     List<Product> productsCategory = [];
     if (response.statusCode == 200) {

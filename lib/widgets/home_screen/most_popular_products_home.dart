@@ -31,7 +31,7 @@ class MostPopularProducts extends StatelessWidget {
                     return BlocProvider(
                       create: (context) => ProductBloc(),
                       // اینجا آیدی یونیک هر محصول که از صفحه هوم به طور تک به تک و با استفاده از لیست ویو ارسال شده بود به این صفحه رو میفرستیم به صفحه جزئیات محصول تا باهاش تمام موارد مربوط به محصول رو از اندپوینت های دیگه بگیریم
-                      child: ProductDetailScreen(productId: products[index]),
+                      child: ProductDetailScreen(product: products[index]),
                     );
                    
                   }));

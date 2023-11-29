@@ -1,6 +1,8 @@
 import 'package:get_it/get_it.dart';
 import 'package:dio/dio.dart';
 import 'package:online_shop/config/data.dart';
+import 'package:online_shop/data/datasources/Basket/basket_datasource.dart';
+import 'package:online_shop/data/datasources/Basket/basket_datasource_impl.dart';
 import 'package:online_shop/data/datasources/auth/authentication_datasource.dart';
 import 'package:online_shop/data/datasources/auth/authentication_impl.dart';
 import 'package:online_shop/data/datasources/banner/banner_data_source.dart';
@@ -14,6 +16,8 @@ import 'package:online_shop/data/datasources/product/product_data_source_impl.da
 import 'package:online_shop/data/datasources/productPageDetail/product_detail_data_source.dart';
 import 'package:online_shop/data/datasources/productPageDetail/product_detail_data_source_impl.dart';
 import 'package:online_shop/data/models/ProductGallery.dart';
+import 'package:online_shop/data/repositories/Basket/basket_repository.dart';
+import 'package:online_shop/data/repositories/Basket/basket_repository_impl.dart';
 import 'package:online_shop/data/repositories/auth/authentication_impl.dart';
 import 'package:online_shop/data/repositories/auth/authentication_repository.dart';
 import 'package:online_shop/data/repositories/banner/banner_repository.dart';
@@ -137,19 +141,33 @@ void initProductGalleryRepositoryService(){
   ServiceLocator.registerFactory<ProductDetailPageRepositoryInterFace>(() => ProductDetailPageRepository());
 }
 
-// ===================== Remote Product Gallery DataSource
+// ===================== Remote CtegoryProduct DataSource
 
 void initCategoryProductService(){
   ServiceLocator.registerFactory<CategoryProductInterFace>(() => CategoryProduct());
 }
 
 
-// ===================== Product Gallery Repository
+// ===================== CtegoryProduct Repository
 
 void initCategoryProductRepositoryService(){
   ServiceLocator.registerFactory<CategoryProductRepositoryInterFace>(() => CategoryProductRepository());
 }
 
+
+
+// ===================== Basket Local DataSource
+
+void initBasketService(){
+  ServiceLocator.registerFactory<BasketInterFace>(() => Basket());
+}
+
+
+// ===================== Basket Local Repository
+
+void initBasketRepositoryService(){
+  ServiceLocator.registerFactory<BasketRepositoryInterFace>(() => BasketRepository());
+}
 
 
 
@@ -174,5 +192,7 @@ initProductGalleryRepositoryService();
 initProductGalleryService();
 initCategoryProductRepositoryService();
 initCategoryProductService();
+initBasketRepositoryService();
+initBasketService();
 }
 

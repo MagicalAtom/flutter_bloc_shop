@@ -23,4 +23,8 @@ class Helper {
     return ((price - realPrice) / price) * 100;
   }
 
+
+
+
 }
+

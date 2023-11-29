@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:online_shop/bloc/Category/category_bloc.dart';
+import 'package:online_shop/bloc/CategoryProduct/category_product_bloc.dart';
 import 'package:online_shop/config/color.dart';
 import 'package:online_shop/config/data.dart';
 import 'package:online_shop/data/models/Category.dart';
+import 'package:online_shop/extension/Navigator.dart';
 import 'package:online_shop/helper/helper.dart';
+import 'package:online_shop/screens/product_list_screen.dart';
 import 'package:online_shop/widgets/appbar_widget.dart';
 import 'package:online_shop/widgets/cache_image.dart';
 import 'package:shimmer/shimmer.dart';
@@ -54,7 +57,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
               builder: (context, state) {
                 if (state is CategoryLoadingState) {
                   return const SliverToBoxAdapter(
-                      child:LinearProgressIndicator());
+                      child: LinearProgressIndicator());
                 } else if (state is CategoryShowState) {
                   return state.categories.fold((failed) {
                     return const SliverToBoxAdapter(
@@ -86,11 +89,21 @@ class _GenerateItemList extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 25),
       sliver: SliverGrid(
         delegate: SliverChildBuilderDelegate((context, index) {
-          return CacheImage(
-            imageUrl: Helper.getFilePath(
-                collectionId: category[index].collectionId,
-                recordId: category[index].id,
-                filename: category[index].thumbnail),
+          return GestureDetector(
+            onTap: () {
+              to(
+                  context: context,
+                  route: BlocProvider<CategoryProductBloc>(
+                    create: (context) => CategoryProductBloc(),
+                    child: ProductListScreen(category: category[index]),
+                  ));
+            },
+            child: CacheImage(
+              imageUrl: Helper.getFilePath(
+                  collectionId: category[index].collectionId,
+                  recordId: category[index].id,
+                  filename: category[index].thumbnail),
+            ),
           );
         }, childCount: category.length),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(

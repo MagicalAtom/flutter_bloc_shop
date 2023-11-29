@@ -1,7 +1,6 @@
 part of 'category_product_bloc.dart';
 
-@immutable
-sealed class CategoryProductEvent {}
+abstract class CategoryProductEvent {}
 
 
 

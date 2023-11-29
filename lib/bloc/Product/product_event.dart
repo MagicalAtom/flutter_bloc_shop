@@ -19,3 +19,9 @@ class ProductDetailRequestEvent extends ProductEvent {
 
 
 }
+
+class AddToBasketEvent extends ProductEvent {
+  BasketItem product;
+
+  AddToBasketEvent({required this.product});
+}

@@ -4,6 +4,7 @@ import 'package:online_shop/bloc/CategoryProduct/category_product_bloc.dart';
 import 'package:online_shop/data/datasources/categoryProduct/category_product_data_source.dart';
 import 'package:online_shop/data/models/Category.dart';
 import 'package:online_shop/extension/Navigator.dart';
+import 'package:online_shop/extension/ToColor.dart';
 import 'package:online_shop/helper/helper.dart';
 import 'package:online_shop/screens/product_list_screen.dart';
 import 'package:online_shop/widgets/cache_image.dart';
@@ -17,8 +18,6 @@ ListView generateCategoryItems(List<CategoryModel> category) {
     itemCount: category.length,
     shrinkWrap: true,
     itemBuilder: (context, index) {
-      String categoryColor = 'ff${category[index].color}';
-      int hexColor = int.parse(categoryColor, radix: 16);
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10),
         child: GestureDetector(
@@ -34,7 +33,7 @@ ListView generateCategoryItems(List<CategoryModel> category) {
           },
           child: CategoryItem(
             text: category[index].title,
-            color: Color(hexColor),
+            color: category[index].color.ToColor(),
             textStyle: const ['SM', 13, Colors.black, FontWeight.w500],
             child: Center(
                 child: SizedBox(

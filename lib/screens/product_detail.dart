@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:online_shop/bloc/Product/product_bloc.dart';
 import 'package:online_shop/config/color.dart';
+import 'package:online_shop/data/models/BasketItem.dart';
 import 'package:online_shop/data/models/Product.dart';
 import 'package:online_shop/data/models/ProductGallery.dart';
 import 'package:online_shop/enums/VariantType.dart';
 import 'package:online_shop/helper/helper.dart';
 import 'package:online_shop/screens/loading_screen.dart';
+import 'package:online_shop/services/Hive/Hive.dart';
 import 'package:online_shop/widgets/appbar_widget.dart';
 import 'package:online_shop/widgets/cache_image.dart';
 import 'package:online_shop/widgets/custom_text_widget.dart';
@@ -18,8 +20,8 @@ import 'package:online_shop/widgets/product_detail_screen/product_properties.dar
 import 'package:online_shop/widgets/product_detail_screen/product_storage_variant.dart';
 
 class ProductDetailScreen extends StatefulWidget {
-  ProductDetailScreen({super.key, required this.productId});
-  Product productId;
+  ProductDetailScreen({super.key, required this.product});
+  Product product;
 
   @override
   State<ProductDetailScreen> createState() => _ProductDetailScreenState();
@@ -33,8 +35,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         .read<ProductBloc>()
         // اینجا آیدی محصول رو که از ویجت جنریت محبوب ترین محصولات میاد رو میدیم به بلاک تا بلاک با استفاده از ریپازیتوری و ریپازیتوری با استفاده از دیتاسورس موارد مورد نیاز ما رو بگیره .
         .add(ProductDetailRequestEvent(
-            product_id: widget.productId.id,
-            category_id: widget.productId.category));
+            product_id: widget.product.id,
+            category_id: widget.product.category));
   }
 
   int _selectedImageGalleryIndex = 0;
@@ -99,7 +101,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
 
 
-                  _ProductTitle(productTitle: widget.productId.name),
+                  _ProductTitle(productTitle: widget.product.name),
 
 
                   const SliverToBoxAdapter(
@@ -167,9 +169,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                       defualtImage: Helper.getFilePath(
                                           // اینجا هم اگه آرایه بالا خالی بود پس عکس دیفالت محصول رو به این صورت نشون میدیم
                                           collectionId:
-                                              widget.productId.collectionId,
-                                          recordId: widget.productId.id,
-                                          filename: widget.productId.thumbnail),
+                                              widget.product.collectionId,
+                                          recordId: widget.product.id,
+                                          filename: widget.product.thumbnail),
                                     );
                                   })
                                 ],
@@ -260,7 +262,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
                   //============================ product Description =========================== //
 
-                   ProductDescription(description: widget.productId.description,),
+                   ProductDescription(description: widget.product.description,),
 
 
                   const SliverToBoxAdapter(
@@ -424,7 +426,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         children: [
                           Expanded(
                               child: AddToBasketButton(
-                                  text: 'افزودن به سبد خرید')),
+                                  text: 'افزودن به سبد خرید',product: widget.product,)),
                           const SizedBox(
                             width: 20,
                           ),
@@ -604,52 +606,61 @@ class _ProductTitle extends StatelessWidget {
 }
 
 class AddToBasketButton extends StatelessWidget {
-  AddToBasketButton({super.key, required this.text});
+  AddToBasketButton({super.key, required this.text,required this.product});
 
   String text;
+  Product product; // محصولی که اومده به صفحه جزئیات محصول بالاتر در دسترسه دیگه میدیم مواردش رو به این اگه نیاز باشه بهش اضافه بشه به سبد خرید . 
 
+// وقتی روی دیگه کلیک بشه این میاد محصول رو کامل اضافه میکنه به سبد خرید
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.bottomCenter,
-      clipBehavior: Clip.none,
-      children: [
-        Container(
-          width: 140,
-          height: 47,
-          decoration: BoxDecoration(
-            color: ColorConfig.main,
-            borderRadius: BorderRadius.circular(15),
+    return GestureDetector(
+      onTap: () {
+        BasketItem productAddedToBoxWheneClckThisButton = BasketItem(product.id, product.collectionId, product.thumbnail, product.discount_price,product.price, product.name, product.category);
+
+        context.read<ProductBloc>().add(AddToBasketEvent(product: productAddedToBoxWheneClckThisButton));
+      },
+      child: Stack(
+        alignment: Alignment.bottomCenter,
+        clipBehavior: Clip.none,
+        children: [
+          Container(
+            width: 140,
+            height: 47,
+            decoration: BoxDecoration(
+              color: ColorConfig.main,
+              borderRadius: BorderRadius.circular(15),
+            ),
           ),
-        ),
-        Positioned(
-          top: 6,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(15),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-              child: Container(
-                width: 160,
-                height: 53,
-                decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(.2),
-                    borderRadius: BorderRadius.circular(15),
-                    border: Border.all(width: 1.5, color: Colors.white)),
-                child: Center(
-                  child: Text(
-                    text,
-                    style: const TextStyle(
-                        color: Colors.white,
-                        fontFamily: 'SM',
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700),
+          Positioned(
+            top: 6,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(15),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                child: Container(
+                  width: 160,
+                  height: 53,
+                  decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(.2),
+                      borderRadius: BorderRadius.circular(15),
+                      border: Border.all(width: 1.5, color: Colors.white)),
+                  child: Center(
+                    child: Text(
+                      text,
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontFamily: 'SM',
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700),
+                    ),
                   ),
                 ),
               ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

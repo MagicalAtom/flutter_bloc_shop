@@ -17,6 +17,18 @@ class BasketRepository implements BasketRepositoryInterFace {
     }
   }
   
+  @override
+  Future<Either<String, List<BasketItem>>> getBasketList() async {
+    try {
+      final items = await basket.getBasketList();
+      return right(items);
+    } catch (e) {
+      return left(e.toString() ?? 'خطا داده های برنامه در دسترس نیست');
+    }
+
+
+  }
+  
   
   
   

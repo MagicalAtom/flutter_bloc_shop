@@ -7,12 +7,12 @@ import 'package:online_shop/services/Hive/Hive.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // initial Service
-  await initServiceLocator();
   await hive.init();
   hive.run<BasketItem>(BasketItemAdapter());
   await hive.make<BasketItem>('BasketBox');
+
+  // initial Service
+  await initServiceLocator();
 
 
   runApp(FirstScreen());

@@ -1,8 +1,11 @@
 import 'package:dotted_line/dotted_line.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:online_shop/bloc/Basket/basket_bloc.dart';
 import 'package:online_shop/config/color.dart';
 import 'package:online_shop/data/models/BasketItem.dart';
 import 'package:online_shop/helper/helper.dart';
+import 'package:online_shop/screens/loading_screen.dart';
 import 'package:online_shop/services/Hive/Hive.dart';
 import 'package:online_shop/widgets/appbar_widget.dart';
 import 'package:online_shop/widgets/cache_image.dart';
@@ -16,32 +19,59 @@ class BasketScreen extends StatefulWidget {
 }
 
 class _BasketScreenState extends State<BasketScreen> {
-  var basketBox = hive.open<BasketItem>('BasketBox');
   @override
   Widget build(BuildContext context) {
+    return BlocBuilder<BasketBloc,BasketState>(
+      builder: (context, state) {
+        return BuildBasketUi(context,state);
+      },
+    );
+  }
+
+  Widget BuildBasketUi(BuildContext context,state) {
+    if(state is BasketRequestLoading){
+      return const LoadingScreen();
+    }else if(state is BasketRequestResponseState){
     return Scaffold(
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: InkWell(
-        onTap: () {},
-        child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 24),
-          height: 56,
-          width: MediaQuery.of(context).size.width,
-          decoration: BoxDecoration(
-              color: ColorConfig.green,
-              borderRadius: BorderRadius.circular(15)),
-          child: Center(
-            child: CustomText(
-              text: 'ادامه فرآیند خرید',
-              color: Colors.white,
-              fontFamily: 'SM',
-              fontSize: 17,
-              fontWeight: FontWeight.w600,
+        floatingActionButtonLocation:
+            FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: InkWell(
+          onTap: () {},
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 24),
+            height: 56,
+            width: MediaQuery.of(context).size.width,
+            decoration: BoxDecoration(
+                color: ColorConfig.green,
+                borderRadius: BorderRadius.circular(15)),
+            child: Center(
+              child: CustomText(
+                text: 'ادامه فرآیند خرید',
+                color: Colors.white,
+                fontFamily: 'SM',
+                fontSize: 17,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ),
-      ),
-      body: SafeArea(
+        body: Main(state: state),
+      );
+    }
+    return const Text('خطا  داده های برنامه در دسترس نیست');
+  }
+
+
+/*
+از هایو خونده میشه تو دیتاسورس میده به ریپازیتوری ریپازیتوری به بلاک و داخل یو آی از بلاک خونده میشه به لیست ویو و لیست ویو دونه دونه میفرسته سمت ویدجت
+*/
+  Widget Main({required BasketRequestResponseState state}) {
+    return state.basketList.fold(
+      (faild){
+        return const Text('خطا داده های برنامه در دسترس نیست');
+      },
+      (success){
+  return SafeArea(
         child: Stack(
           alignment: AlignmentDirectional.bottomCenter,
           children: [
@@ -79,30 +109,25 @@ class _BasketScreenState extends State<BasketScreen> {
                 ),
                 SliverPadding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
-                  sliver: ValueListenableBuilder(
-                    valueListenable: basketBox.values,
-                    builder: (context, value, child) {
-                    return SliverList(
-                      // This is not scrolldirection
-                      delegate: SliverChildBuilderDelegate(
-                          (context, index) {
-                            var boxValue = basketBox.values.toList()[index];
-                            return BasketBox(
-                              SingleBasketItem: boxValue,
-                              );
-                          },
-                          childCount: basketBox.values.toList().length),
-                    );  
-                    },
-                     
+                  sliver: SliverList(
+                    // This is not scrolldirection
+                    delegate:
+                        SliverChildBuilderDelegate((context, index) {
+                      var boxValue = success[index]; // اونجا ولیوز گرفته شده تو دیتاسورس به لیست تبدیل شده .  محتواش هم لیستی از بسکت آیتم ها بوده دیگه اینجا با ایندکس میگیریمش
+                      return BasketBox(
+                        SingleBasketItem: boxValue,
+                      );
+                    }, childCount: success.length),
                   ),
                 ),
               ],
             ),
           ],
         ),
-      ),
+      );
+      }
     );
+    
   }
 }
 
@@ -113,7 +138,6 @@ class BasketBox extends StatelessWidget {
   });
 
   BasketItem SingleBasketItem;
-
 
   @override
   Widget build(BuildContext context) {
@@ -133,15 +157,16 @@ class BasketBox extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(top: 25, right: 19),
-                    child: SizedBox(
-                      width: 83,
-                      child: CacheImage(imageUrl: Helper.getFilePath(
-                          collectionId: SingleBasketItem.collectionId,
-                          recordId: SingleBasketItem.id,
-                          filename: SingleBasketItem.thumbnail),),
-                    )
-                  ),
+                      padding: const EdgeInsets.only(top: 25, right: 19),
+                      child: SizedBox(
+                        width: 83,
+                        child: CacheImage(
+                          imageUrl: Helper.getFilePath(
+                              collectionId: SingleBasketItem.collectionId,
+                              recordId: SingleBasketItem.id,
+                              filename: SingleBasketItem.thumbnail),
+                        ),
+                      )),
                   const SizedBox(
                     width: 18,
                   ),
@@ -173,7 +198,8 @@ class BasketBox extends StatelessWidget {
                         Row(
                           children: [
                             CustomText(
-                              text: SingleBasketItem.realPrice.toString() +  ' تومان',
+                              text: SingleBasketItem.realPrice.toString() +
+                                  ' تومان',
                               color: ColorConfig.grey,
                               fontFamily: 'SM',
                               fontSize: 14,
@@ -190,7 +216,9 @@ class BasketBox extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(40)),
                               child: Center(
                                 child: CustomText(
-                                  text: SingleBasketItem.persent!.toStringAsFixed(0) + '%',
+                                  text: SingleBasketItem.persent!
+                                          .toStringAsFixed(0) +
+                                      '%',
                                   color: Colors.white,
                                   fontFamily: 'SM',
                                   fontSize: 15,
@@ -241,7 +269,8 @@ class BasketBox extends StatelessWidget {
                             Container(
                               width: 115,
                               height: 34,
-                              padding: const EdgeInsets.symmetric(horizontal: 8),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8),
                               decoration: BoxDecoration(
                                   border: Border.all(
                                     width: 1,
@@ -257,7 +286,7 @@ class BasketBox extends StatelessWidget {
                                         color: Colors.green[900],
                                         shape: BoxShape.circle),
                                   ),
-                                 const  SizedBox(
+                                  const SizedBox(
                                     width: 5,
                                   ),
                                   CustomText(
@@ -321,7 +350,8 @@ class BasketBox extends StatelessWidget {
                             Container(
                               width: 70,
                               height: 30,
-                              padding: const  EdgeInsets.symmetric(horizontal: 7),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 7),
                               decoration: BoxDecoration(
                                   border: Border.all(
                                     width: 1,
@@ -354,7 +384,8 @@ class BasketBox extends StatelessWidget {
                             Container(
                               width: 70,
                               height: 30,
-                              padding: const EdgeInsets.symmetric(horizontal: 7),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 7),
                               decoration: BoxDecoration(
                                   border: Border.all(
                                     width: 1,

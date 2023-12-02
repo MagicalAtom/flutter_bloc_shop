@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:online_shop/bloc/Basket/basket_bloc.dart';
 import 'package:online_shop/bloc/Category/category_bloc.dart';
 import 'package:online_shop/bloc/Home/home_bloc.dart';
 import 'package:online_shop/config/color.dart';
@@ -31,7 +32,14 @@ class _HomeState extends State<Home> {
       create: (context) => HomeBloc(),
       child: MyApp(),
     ),
-    const BasketScreen(),
+    BlocProvider<BasketBloc>(
+      create: (context) {
+        var bloc = BasketBloc();
+        bloc.add(RequestBasketEvent());
+        return bloc;
+      },
+      child: const BasketScreen(),
+    ), // اماده کردن صفحه سبد خرید برای بلاک خود
     BlocProvider<CategoryBloc>(
       create: (context) => CategoryBloc(),
       child: const CategoryScreen(),
@@ -137,9 +145,10 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    context.read<HomeBloc>().add(HomeRequestEvent()); // send event for request data in home screen
+    context
+        .read<HomeBloc>()
+        .add(HomeRequestEvent()); // send event for request data in home screen
   }
-
 
 // using bloc Builder for use HomeBloc
   @override
@@ -150,7 +159,6 @@ class _MyAppState extends State<MyApp> {
       },
     );
   }
-
 
 // state
 // استیت رو از بالا دریافت کردیم و اینجا تو این ویجت به راحتی هر جا رو میخوایم میتونیم تغییر بدیم و از بلاک استفاده کنیم
@@ -201,8 +209,6 @@ class _MyAppState extends State<MyApp> {
               ),
             ),
 
-
-
             // *************************** Top Slider *************************** //
             state.banners.fold((faild) {
               return const SliverToBoxAdapter(
@@ -216,14 +222,6 @@ class _MyAppState extends State<MyApp> {
               );
             }),
             // *************************** End Top Slider *************************** //
-
-
-
-
-
-
-
-
 
             // *************************** Categories *************************** //
             // categories section title
@@ -244,7 +242,6 @@ class _MyAppState extends State<MyApp> {
               ),
             ),
 
-
             state.categories.fold(
               (faild) {
                 return const SliverToBoxAdapter(
@@ -259,19 +256,7 @@ class _MyAppState extends State<MyApp> {
               },
             ),
 
-
             // *************************** End  Categories *************************** //
-
-
-
-
-
-
-
-
-
-
-
 
             // *************************** Most popular product *************************** //
             SliverToBoxAdapter(
@@ -305,7 +290,6 @@ class _MyAppState extends State<MyApp> {
 
             // ***************************  End  Most popular product *************************** //
 
-
             // *************************** Most popular product *************************** //
             SliverToBoxAdapter(
               child: Padding(
@@ -335,10 +319,6 @@ class _MyAppState extends State<MyApp> {
         )),
       );
     }
-    return const  Text('Error');
+    return const Text('Error');
   }
-
-
-
 }
-

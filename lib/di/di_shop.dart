@@ -1,5 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:dio/dio.dart';
+import 'package:online_shop/bloc/Basket/basket_bloc.dart';
 import 'package:online_shop/config/data.dart';
 import 'package:online_shop/data/datasources/Basket/basket_datasource.dart';
 import 'package:online_shop/data/datasources/Basket/basket_datasource_impl.dart';
@@ -170,7 +171,11 @@ void initBasketRepositoryService(){
 }
 
 
+// =================== Basket Bloc
 
+void initBasketBloc(){
+  ServiceLocator.registerSingleton<BasketBloc>(BasketBloc());
+}
 
 
 
@@ -194,5 +199,6 @@ initCategoryProductRepositoryService();
 initCategoryProductService();
 initBasketRepositoryService();
 initBasketService();
+initBasketBloc();
 }
 

@@ -26,6 +26,11 @@ class MostPopularProducts extends StatelessWidget {
             itemCount: products.length,
             itemBuilder: (context, index) {
               return GestureDetector(
+                  // Navigator.push(context,MaterialPageRoute(builder: (BuildContext context){
+                  //   return BlocProvider(
+                  //     create: (context) => ProductBloc(),
+                  //     // اینجا آیدی یونیک هر محصول که از صفحه هوم به طور تک به تک و با استفاده از لیست ویو ارسال شده بود به این صفحه رو میفرستیم به صفحه جزئیات محصول تا باهاش تمام موارد مربوط به محصول رو از اندپوینت های دیگه بگیریم
+                  //     child: ProductDetailScreen(product: products[index]),
                 onTap: (){
                   Navigator.push(context,MaterialPageRoute(builder: (BuildContext context){
                     return BlocProvider(
